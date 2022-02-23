@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>쿵쿵따 게임</title>
+    <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <!--css로 꾸밀때는 class 속성 사용. JavaScript로 DOM 건드릴때는 id 속성 사용-->
+            <h3><span id="order">1</span>번째 참가자</h3>
+            <p>제시어: <span id="word"></span></p>
+            <table>
+                <tr>
+                    <td>
+                        <input type="text" id="input" class="input" />
+                    </td>
+                    <td>
+                        <!--button태그에 인라인으로 넣는 onclick 이벤트는 html 속성이므로 JS 이벤트 리스너로 click 이벤트 발생시 특정 함수 호출하는 방식으로 하기-->
+                        <button type="button" class="btn">입력</button>
+                    </td>
+                </tr>
+            </table>
+            <p id="message"></p>
+        </div>
+    </main>
+
+    <script>
+        /*
+        DOM 태그에 연결할 상수변수 선언
+        1. $word : 제시어
+        2. $order : 참가자 순서
+        3. $input : 인풋창
+        4. $button : 버튼
+        5. $message : 메세지
+        */
+        const $word = document.querySelector("#word");
+        const $order = document.querySelector("#order");
+        const $input = document.querySelector("#input");
+        const $button = document.querySelector("button");
+        const $message = document.querySelector("#message");
+
+        /*
+        상수변수 member에 참가자 수 입력받아 저장
+        */
+        const member = Number(prompt("참가자는 몇 명입니까?")); //숫자를 입력하면 정상적으로 숫자변환. 문자열이나 빈칸이 입력되면 NaN로 변환되고(자료형은 물론 number) 이것은 불린 값으로 변환하면 false이다.
+        if (!member) {
+            alert("게임을 시작하려면 참가자수를 입력하세요.");
+            window.location.reload();
+        }
+        $input.focus(); //참가자수 입력후 포커스가 input란에 가게함
+
+        /*
+        사용할 변수 선언
+        */
+        let word; //제시어
+        let newWord; //새로 입력한 현재 단어        
+
+        /*
+        * 이벤트 핸들러 함수 작성 -> 콜백 함수로 작성하기(특정 이벤트가 발생한 후 함수가 호출되므로) 
+        * 1. oninput() : 글자가 입력 되었을 때 
+        * 2. onClickButton() : 버튼이 눌렸을 때 
+        */
+        const onInput = () => {
+            newWord = $input.value; //const onInput = e => { newWord = e.target.value; }; 와 똑같음.
+        }
+        const onClickButton = () => {
+            console.log(newWord);
+            if (newWord && newWord.length === 3) {
+                $message.textContent = "";
+                if (!word || (word[word.length - 1] === newWord[0])) {
+                    /*
+                    끝말잇기 두음법칙 적용하기 -> ㄴ,ㄹ 이 첫머리에 오는걸 꺼려하는 것 령->영 리->이 녕->영 등
+                    */
+                    word = newWord;  //제시어가 없으니 입력된 현재 단어를 제시어로
+                    $word.textContent = word;   //제시어를 화면에 나타내기
+                    const order = Number($order.textContent);
+                    if (order + 1 > member) {
+                        $order.textContent = 1;
+                    }
+                    else {
+                        $order.textContent = order + 1;
+                    }
+                }
+                else {
+                    $message.textContent = "올바른 단어를 입력하세요.";
+                }
+                $input.value = ""; //인풋창 비우고 포커스 가게 하기
+                $input.focus();
+            } else {
+                $message.textContent = "세글자로 된 단어를 입력하세요.";
+            }
+        }
+
+        /*
+        JavaScript 이벤트 리스너 달기
+        (자바스크립트는 자동으로 이벤트 감지를 못함!!
+        그래서 이벤트 리스너로 자바스크립트가 html에서 발생한 이벤트를 감지할 수 있게 함)
+        */
+        $input.addEventListener('input', onInput); //콜백함수 이름만 쓰기!! ()붙이면 클릭 여부 상관없이 함수 콜함
+        $button.addEventListener('click', onClickButton);
+
+    </script>
+</body>
+
+</html>
